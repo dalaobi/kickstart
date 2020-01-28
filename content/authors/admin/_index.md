@@ -45,7 +45,7 @@ social:
 - icon: envelope
   icon_pack: fas
   link: 'zhexuanshan@gmail.com'  # For a direct email link, use "mailto:test@example.org".
-- icon: Linkedin
+- icon: linkedin
   icon_pack: fab
   link: https://www.linkedin.com/in/zhexuan-shan-308844191/
 - icon: github
