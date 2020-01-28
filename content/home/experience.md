@@ -22,8 +22,8 @@ date_format = "Jan 2006"
   company = "MSRA"
   company_url = ""
   location = "china"
-  date_start = "Jul-01-2019"
-  date_end = "Aug-01-2019"
+  date_start = "Jan 2006"
+  date_end = "Jan 2006"
   description = """Participle"""
 
 [[experience]]
@@ -31,8 +31,8 @@ date_format = "Jan 2006"
   company = "Momenta"
   company_url = ""
   location = "china"
-  date_start = "Feb-01-2019"
-  date_end = "Jun-01-2019"
+  date_start = "Jan 2006"
+  date_end = "Jan 2006"
   description = """mapping"""
 
 +++
