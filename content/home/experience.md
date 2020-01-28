@@ -32,7 +32,7 @@ date_format = "Jan 2006"
   company_url = ""
   location = "china"
   date_start = "2019-02"
-  date_end = "2019-6"
+  date_end = "2019-06"
   description = """mapping"""
 
 +++
