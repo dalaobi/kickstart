@@ -24,12 +24,7 @@ date_format = "Jan 2006"
   location = "china"
   date_start = "2019-07-01"
   date_end = "2019-08-01"
-  description = """Participle"""
-  Responsibilities include:
-  
-  * Analysing
-  * Modelling
-  * Deploying
+  description = """Participle
   """
 
 [[experience]]
