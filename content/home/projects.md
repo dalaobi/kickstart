@@ -32,14 +32,7 @@ subtitle = ""
   # [[content.filter_button]]
   #   name = "Other"
   #   tag = "Demo"
-  [[project]]
-  title = "sde intern"
-  company = "MSRA"
-  company_url = ""
-  location = "china"
-  date_start = "2017-01-01"
-  date_end = "2017-01-01"
-  description = """Participle"""
+
 
 [design]
   # Choose how many columns the section has. Valid values: 1 or 2.
