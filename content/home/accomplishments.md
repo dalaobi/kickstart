@@ -18,6 +18,25 @@ date_format = "Jan 2006"
 #   Leave other parameters empty if not required.
 #   Begin/end multi-line descriptions with 3 quotes `"""`.
 
+
+ 
+[[item]]
+  organization = ""
+  organization_url = ""
+  title = "High Definition Map Basement Library"
+  url = ""
+  certificate_url = ""
+  date_start = "2018-08-01"
+  date_end = "2018-12-01"
+  description = """ 
+  High Definition Map Basement Library 
+
+  *  Developed a code library of the following supporting methods like merge points, separate points, distribute points, circular arrangement points, linear arrangement points, point and line combination, lines split, merge, reverse, simplify, separate, etc.
+  *  Developed a basement library in Python to load OSM data to an instance planet: judging the parallel line, setting a new node or a line or polygon to the planet, modifying the elements of the planet. 
+  *  Developed unit tests and achieved 96% code coverage. This library is used by the entire team to process map features.
+  *  Converted this library into node.js for front-end calls.
+
+   """
 [[item]]
   organization = ""
   organization_url = ""
@@ -32,52 +51,6 @@ date_format = "Jan 2006"
    * The main model is constructed by xDeepFM which includes Linear, CIN and DNN. 
    * The model and algorithm is realized by Tensorflow (Keras)
 
-   """
-
-[[item]]
-  organization = ""
-  # organization_url = "https://www.edx.org"
-  title = "News text classification (Data Mining)"
-  # url = "https://www.edx.org/professional-certificate/uc-berkeleyx-blockchain-fundamentals"
-  # certificate_url = "https://www.edx.org"
-  date_start = "2018-10-01"
-  date_end = ""
-  description = """
-   * The spider by Python is used to crawl 5 million news data in 10 different classes
-   * Realizing Bayes Classification Algorithms by naïve Python
-   * Using scikit-learn to implement classification by Logistic Regression, Support Vector Machine and Multi-Layer Perception
-
-   """
-  
-[[item]]
-  organization = ""
-  organization_url = ""
-  title = "Balance (iOS application)"
-  url = ""
-  certificate_url = ""
-  date_start = "2018-08-01"
-  date_end = "2018-12-01"
-  description = """ 
-  Balance is mainly aimed to help users to analyze their daily calories. It records daily exercise and diet to determine whether daily intake and consumption are balanced and whether fat is accumulated.
-   * Drawing the line chart of historical records
-   * Using Xunfei SDK to realize voice to text
-   * Use native animation effects to improve user interaction
-   """
-
-[[item]]
-  organization = ""
-  organization_url = ""
-  title = "BodyPlus (iOS application)"
-  url = ""
-  certificate_url = ""
-  date_start = "2015-08-01"
-  date_end = "2017-05-01"
-  description = """ 
-  The main function of BodyPlus is to provide smart wearing devices and mobile phones for interaction and to collect, real-time transmission, statistics and display of sports data.
-   * Data transfer between iOS device and smart wearing device by Bluetooth 
-   * Displaying Bluetooth data in time by using OpenGL for drawing
-   * Realizing instant messaging by HuanXin SDK
-   * Using AMAP to complete the trajectory drawing
    """
 
 +++
