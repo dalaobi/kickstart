@@ -1,8 +1,7 @@
 ---
 data: 2020-05-11
-title: assignment 1
+title: Assigment1
 ---
-
 
 ```
 import matplotlib
@@ -97,14 +96,6 @@ for i, degree in enumerate([0, 1, 3, 9]):
 plt.show()
 ```
 
+
 ![png](./assignment1_1_0.png)
 
-
-```python
-
-```
-
-
-```python
-
-```
