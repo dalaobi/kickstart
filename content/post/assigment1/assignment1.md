@@ -97,5 +97,14 @@ for i, degree in enumerate([0, 1, 3, 9]):
 plt.show()
 ```
 
-![ng](./assignment1_1_0.png)
+![png](./assignment1_1_0.png)
 
+
+```python
+
+```
+
+
+```python
+
+```
