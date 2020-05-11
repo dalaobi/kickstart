@@ -1,3 +1,10 @@
+---
+data: 2020-05-11
+title: practice classifier
+---
+
+
+
 ```
 !wget --quiet https://raw.githubusercontent.com/tensorflow/models/master/official/nlp/bert/tokenization.py
 ```
