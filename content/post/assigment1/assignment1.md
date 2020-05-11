@@ -98,4 +98,5 @@ plt.show()
 
 
 ![png](./assignment1_1_0.png)
-
+![png](./assignment1_1_0.png)
+![png](./assignment1_1_0.png)
