@@ -1,8 +1,3 @@
----
-data: 2020-05-11
-title: Assigment1
----
-
 ```
 import matplotlib
 # matplotlib.use("agg")
@@ -98,5 +93,4 @@ plt.show()
 
 
 ![png](./assignment1_1_0.png)
-![png](./assignment1_1_0.png)
-![png](./assignment1_1_0.png)
+
