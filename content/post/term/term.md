@@ -1,6 +1,6 @@
 ---
 data: 2020-05-11
-title: term project
+title: termproject
 ---
 
 # Readme
@@ -359,8 +359,15 @@ Note that the last entry in this list is crucial, because we may not want to seg
 
 ```
 def word_segmentation(str):
-    w = re.sub('[^a-zA-Z]',' ', str).lower().split() # Remove non-alphabetic characters
-    sw = (nltk.corpus.stopwords.words('english')) # Remove stopwords
+    def splitPairs(word):
+        return [(word[:i+1], word[i+1:]) for i in range(len(word))]
+    def segment(word):
+        if not word: return []
+        allSegmentations = [[first] + segment(rest)
+                            for (first, rest) in splitPairs(word)]
+        return max(allSegmentations, key = wordSeqFitness)
+    w = re.sub('[^a-zA-Z]',' ', str).lower().split()   # Remove non-alphabetic characters
+    sw = (nltk.corpus.stopwords.words('english'))      # Remove stopwords
     wd = [x for x in w if x not in sw]
     return wd
 ```
@@ -423,11 +430,13 @@ idf(t) = log(n/df(t)) +1
 
 ```
 # Get all the words in the training set non-repeatedly and record the index of each word
-words_index_dict = dict()
+words_index_dict = {}
 index = 0
 for rating in x_train:
     for word in rating:
-        if word not in words_index_dict:
+        if word in words_index_dict:
+          continue
+        else:
             words_index_dict[word]=index
             index+=1
 ```
@@ -439,11 +448,16 @@ idf = [0 for _ in range(len(words_index_dict))]
 for review_index, review in enumerate(x_train):
     review_counts = pd.value_counts(review)
     for word_index, word in enumerate(review):
-        if word in words_index_dict:
+        if word not in words_index_dict:
+          continue
+        else:
             tf[(review_index,words_index_dict[word])] = review_counts[word]/len(review)
             idf[words_index_dict[word]]+=1
+temp = []
+for cont in idf:
+    temp.append(log(len(x_train)/(cont+1)))
+tf = temp
 
-idf = [log(len(x_train)/(cont+1)) for cont in idf]
 ```
 
 # Algorithms
@@ -528,9 +542,9 @@ for rating in y_train:
 
 
 ```
-def count_value(list):
-    value_count=dict()
-    for x in list:
+def count_value(l:list):
+    value_count={}
+    for x in l:
         if x not in value_count:
             value_count[x]=0
         value_count[x]+=1
