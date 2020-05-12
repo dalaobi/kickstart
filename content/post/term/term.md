@@ -27,7 +27,7 @@ nltk.download("stopwords")
 ```
 
     [nltk_data] Downloading package stopwords to /root/nltk_data...
-    [nltk_data]   Package stopwords is already up-to-date!
+    [nltk_data]   Unzipping corpora/stopwords.zip.
 
 
 
@@ -42,9 +42,6 @@ nltk.download("stopwords")
 
 
 ```
-
-    /bin/bash: response-content-disposition=attachment%3B+filename%3Dbgg-13m-reviews.csv.zip: command not found
-    <?xml version='1.0' encoding='UTF-8'?><Error><Code>AuthenticationRequired</Code><Message>Authentication required.</Message></Error>
 
 **import the data set**
 
@@ -314,29 +311,29 @@ reviews.head()
   </thead>
   <tbody>
     <tr>
-      <th>7361740</th>
+      <th>5261560</th>
       <td>7.5</td>
-      <td>Fun, thematic twist on the original.</td>
+      <td>Kaja: 7</td>
     </tr>
     <tr>
-      <th>1537742</th>
+      <th>2778930</th>
       <td>7.0</td>
-      <td>ESSEN 2014</td>
+      <td>A resource management game that is very quick ...</td>
     </tr>
     <tr>
-      <th>7835124</th>
-      <td>6.5</td>
-      <td>Seemed pretty good... for a pocket size micro ...</td>
+      <th>1999683</th>
+      <td>5.0</td>
+      <td>The kind of game that would benefit from repea...</td>
     </tr>
     <tr>
-      <th>2669846</th>
-      <td>7.0</td>
-      <td>Nice game and thoroughly enjoyable, although t...</td>
+      <th>5066461</th>
+      <td>3.0</td>
+      <td>I'm not a fan of push your luck, but even if y...</td>
     </tr>
     <tr>
-      <th>1743502</th>
-      <td>9.0</td>
-      <td>Very, very clever game.  Needs little space, a...</td>
+      <th>821235</th>
+      <td>8.0</td>
+      <td>Instant hit with both my family and my hardcor...</td>
     </tr>
   </tbody>
 </table>
@@ -358,7 +355,16 @@ Note that the last entry in this list is crucial, because we may not want to seg
 
 
 ```
-def word_segmentation(str):
+def remove_non_alphabetic_characters(s):
+    return re.sub('[^a-zA-Z]',' ', s).lower().split()
+def Remove_stopwords(s = 'english'):
+    return (nltk.corpus.stopwords.words(s)) 
+```
+
+
+```
+
+def word_segmentation(s):
     def splitPairs(word):
         return [(word[:i+1], word[i+1:]) for i in range(len(word))]
     def segment(word):
@@ -366,15 +372,16 @@ def word_segmentation(str):
         allSegmentations = [[first] + segment(rest)
                             for (first, rest) in splitPairs(word)]
         return max(allSegmentations, key = wordSeqFitness)
-    w = re.sub('[^a-zA-Z]',' ', str).lower().split()   # Remove non-alphabetic characters
-    sw = (nltk.corpus.stopwords.words('english'))      # Remove stopwords
+    
+    w = remove_non_alphabetic_characters(s)
+    sw = Remove_stopwords('english')     
     wd = [x for x in w if x not in sw]
     return wd
 ```
 
 
 ```
-x = [word_segmentation(r) for r in reviews['comment']]
+x = [word_segmentation(review) for review in reviews['comment']]
 y = [round(r) for r in reviews['rating']]
 ```
 
@@ -383,18 +390,22 @@ y = [round(r) for r in reviews['rating']]
 
 
 ```
-x_train, y_train, x_test, y_test = x, y, [], []
-test_size = int(len(x)*0.01)
+def dividing_data(x,y):
+    x_train, y_train, x_test, y_test = x, y, [], []
+    test_size = int(len(x)*0.01)
 
-seed(1)
+    seed(1)
 
-for _ in range(test_size):
-    random_index = randrange(len(x_train))
-    x_test.append(x_train.pop(random_index))
-    y_test.append(y_train.pop(random_index))
+    for _ in range(test_size):
+        random_index = randrange(len(x_train))
+        x_test.append(x_train.pop(random_index))
+        y_test.append(y_train.pop(random_index))
+    print('Size of Train Set: ', len(x_train))
+    print('Size of Test Set: ', len(x_test))
+    return (x_test,y_test)
 
-print('Size of Train Set: ', len(x_train))
-print('Size of Test Set: ', len(x_test))
+x_test, y_test = dividing_data(x,y)
+x_train, y_train = x,y
 ```
 
     Size of Train Set:  2611379
@@ -430,6 +441,7 @@ idf(t) = log(n/df(t)) +1
 
 ```
 # Get all the words in the training set non-repeatedly and record the index of each word
+
 words_index_dict = {}
 index = 0
 for rating in x_train:
@@ -439,10 +451,18 @@ for rating in x_train:
         else:
             words_index_dict[word]=index
             index+=1
+
+
 ```
 
 
 ```
+
+def set_tf(idf):
+    temp = []
+    for cont in idf:
+        temp.append(log(len(x_train)/(cont+1)))
+    return temp
 tf={}
 idf = [0 for _ in range(len(words_index_dict))]
 for review_index, review in enumerate(x_train):
@@ -453,10 +473,11 @@ for review_index, review in enumerate(x_train):
         else:
             tf[(review_index,words_index_dict[word])] = review_counts[word]/len(review)
             idf[words_index_dict[word]]+=1
-temp = []
-for cont in idf:
-    temp.append(log(len(x_train)/(cont+1)))
-tf = temp
+idf = set_tf(idf)
+
+
+
+
 
 ```
 
@@ -542,43 +563,35 @@ for rating in y_train:
 
 
 ```
-def count_value(l:list):
+def predict(review):
+    prob = []
+    words_in_review = set(review)
+    l = review
     value_count={}
     for x in l:
         if x not in value_count:
             value_count[x]=0
         value_count[x]+=1
-    return value_count
-
-def predict(review):
-    probability = []
-    words_in_review_set = set(review)
-    words_counts = count_value(review)
-    for label in range(11):
-        prob = 0
-        for word in words_in_review_set:
+    words_counts = value_count
+    for lbl in range(11):
+        p = 0
+        for word in words_in_review:
             if word not in words_index_dict:
                 continue
-            prob+=log(tfidf[label][words_index_dict[word]]*words_counts[word]+1)
-        prob *= label_count[label]/label_count[-1]
-        probability.append(prob)
-    return probability.index(max(probability))
-```
+            p += log(tfidf[lbl][words_index_dict[word]] * words_counts[word] + 1)
+        p *= lbl_count[lbl]/lbl_count[-1]
+        prob.append(p)
+    return prob.index(max(prob))
 
 
 ```
-correct = 0
-for i in range(len(x_test)):
-    ans = predict(x_test[i])
-    print(ans)
-    if predict(x_test[i]) == y_test[i]:
-        correct+=1
-accuracy = correct/len(x_test)
-print("Accuracy = ", accuracy)
+
+
 ```
 
-    Accuracy =  0.2648519543541722
-
+accuracy = sum([predict(x_test[i]) == y_test[i] for i in range((len(x_test)))])/len(x_test)
+print("Accuracy of Test set is:", accuracy)
+```
 
 # Reference
 https://scikit-learn.org/stable/modules/feature_extraction.html#text-feature-extraction
