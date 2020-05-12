@@ -3,8 +3,7 @@ data: 2020-05-11
 title: term project
 ---
 
-
- Readme
+# Readme
 i didn't done this on the github, because i just push it to colab.
 and u can just open the link to run the whole project 
 https://colab.research.google.com/drive/1sdzln9IUD7AUtkxJ1U5SPrgQbP9mhOWC#scrollTo=XH3vfalNVr3M
@@ -56,8 +55,8 @@ nltk.download("stopwords")
 
 
 ```
-data_df = pd.read_csv('bgg-13m-reviews.csv',index_col=0)
-data_df.head()
+df = pd.read_csv('bgg-13m-reviews.csv',index_col=0)
+df.head()
 ```
 
     /usr/local/lib/python3.6/dist-packages/numpy/lib/arraysetops.py:569: FutureWarning: elementwise comparison failed; returning scalar instead, but in the future will perform elementwise comparison
@@ -143,8 +142,8 @@ data_df.head()
 
 
 ```
-data_df = data_df.dropna()
-data_df.head()
+df = df.dropna()
+df.describe()
 ```
 
 
@@ -168,53 +167,50 @@ data_df.head()
   <thead>
     <tr style="text-align: right;">
       <th></th>
-      <th>user</th>
       <th>rating</th>
-      <th>comment</th>
       <th>ID</th>
-      <th>name</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <th>2</th>
-      <td>dougthonus</td>
-      <td>10.0</td>
-      <td>Currently, this sits on my list as my favorite...</td>
-      <td>13</td>
-      <td>Catan</td>
+      <th>count</th>
+      <td>2.637756e+06</td>
+      <td>2.637756e+06</td>
     </tr>
     <tr>
-      <th>3</th>
-      <td>cypar7</td>
-      <td>10.0</td>
-      <td>I know it says how many plays, but many, many ...</td>
-      <td>13</td>
-      <td>Catan</td>
+      <th>mean</th>
+      <td>6.852070e+00</td>
+      <td>6.693990e+04</td>
     </tr>
     <tr>
-      <th>7</th>
-      <td>hreimer</td>
-      <td>10.0</td>
-      <td>i will never tire of this game.. Awesome</td>
-      <td>13</td>
-      <td>Catan</td>
+      <th>std</th>
+      <td>1.775769e+00</td>
+      <td>7.304447e+04</td>
     </tr>
     <tr>
-      <th>11</th>
-      <td>daredevil</td>
-      <td>10.0</td>
-      <td>This is probably the best game I ever played. ...</td>
-      <td>13</td>
-      <td>Catan</td>
+      <th>min</th>
+      <td>1.401300e-45</td>
+      <td>1.000000e+00</td>
     </tr>
     <tr>
-      <th>16</th>
-      <td>hurkle</td>
-      <td>10.0</td>
-      <td>Fantastic game. Got me hooked on games all ove...</td>
-      <td>13</td>
-      <td>Catan</td>
+      <th>25%</th>
+      <td>6.000000e+00</td>
+      <td>3.955000e+03</td>
+    </tr>
+    <tr>
+      <th>50%</th>
+      <td>7.000000e+00</td>
+      <td>3.126000e+04</td>
+    </tr>
+    <tr>
+      <th>75%</th>
+      <td>8.000000e+00</td>
+      <td>1.296220e+05</td>
+    </tr>
+    <tr>
+      <th>max</th>
+      <td>1.000000e+01</td>
+      <td>2.724090e+05</td>
     </tr>
   </tbody>
 </table>
@@ -224,8 +220,8 @@ data_df.head()
 
 
 ```
-reviews_df = data_df[['rating','comment']]
-reviews_df.head()
+reviews = df[['rating','comment']]
+reviews.head()
 ```
 
 
@@ -287,8 +283,8 @@ reviews_df.head()
 
 
 ```
-reviews_df = shuffle(reviews_df)
-reviews_df.head()
+reviews = shuffle(reviews)
+reviews.head()
 ```
 
 
@@ -363,16 +359,16 @@ Note that the last entry in this list is crucial, because we may not want to seg
 
 ```
 def word_segmentation(str):
-    words = re.sub('[^a-zA-Z]',' ', str).lower().split() # Remove non-alphabetic characters
-    stop_words = (nltk.corpus.stopwords.words('english')) # Remove stopwords
-    words =  [x for x in words if x not in stop_words]
-    return words
+    w = re.sub('[^a-zA-Z]',' ', str).lower().split() # Remove non-alphabetic characters
+    sw = (nltk.corpus.stopwords.words('english')) # Remove stopwords
+    wd = [x for x in w if x not in sw]
+    return wd
 ```
 
 
 ```
-x = [word_segmentation(review) for review in reviews_df['comment']]
-y = [round(r) for r in reviews_df['rating']]
+x = [word_segmentation(r) for r in reviews['comment']]
+y = [round(r) for r in reviews['rating']]
 ```
 
 # Divide Data
@@ -469,6 +465,45 @@ After the training procedure we want to classify the new sample (circle with que
 ![alt text](https://www.globalsoftwaresupport.com/wp-content/uploads/2018/02/naivebayes8.png)
 
 
+
+
+```
+class Naive_Bayes:
+    def __init__(self, data):
+        self.d = data.iloc[:, 1:]
+        self.headers = self.d.columns.values.tolist()
+        self.prior = np.zeros(len(self.d['Class'].unique()))
+        self.conditional = {}
+    
+    def build(self):
+        y_unique = self.d['Class'].unique()
+        for i in range(0,len(y_unique)):
+            self.prior[i]=(sum(self.d['Class']==y_unique[i])+1)/(len(self.d['Class'])+len(y_unique))
+            
+        for h in self.headers[:-1]:
+            x_unique = list(set(self.d[h]))
+            x_conditional = np.zeros((len(self.d['Class'].unique()),len(set(self.d[h]))))
+            for j in range(0,len(y_unique)):
+                for k in range(0,len(x_unique)):
+                    x_conditional[j,k]=(self.d.loc[(self.d[h]==x_unique[k])&(self.d['Class']==y_unique[j]),].shape[0]+1)/(sum(self.d['Class']==y_unique[j])+len(x_unique))
+        
+            x_conditional = pd.DataFrame(x_conditional,columns=x_unique,index=y_unique)   
+            self.conditional[h] = x_conditional       
+        return self.prior, self.conditional
+    
+    def predict(self, X):
+        classes = self.d['Class'].unique()
+        ans = []
+        for sample in X:
+            prob = []
+            for i in range(len(self.prior)):
+                p_i = self.prior[i]
+                for j, h in enumerate(self.headers[:-1]):
+                    p_i *= self.conditional[h][sample[j]][i]
+                prob.append(p_i)
+            ans.append(classes[np.argmax(prob)])
+        return ans
+```
 
 for key in tf:
     tf[key]*=idf[key[1]]
