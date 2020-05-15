@@ -1,7 +1,9 @@
 ---
 data: 2020-05-11
-title: termproject
+title: term project
 ---
+
+
 
 # Readme
 i didn't done this on the github, because i just push it to colab.
@@ -14,13 +16,16 @@ then run all the code.
 
 
 
-```
+```python
 import json
 import re
 from random import seed, randrange
 from math import log
 from sklearn.utils import shuffle
 import pandas as pd
+from nltk.corpus import stopwords
+from csv import reader
+from sklearn.model_selection import train_test_split
 
 import nltk
 nltk.download("stopwords")
@@ -38,7 +43,7 @@ nltk.download("stopwords")
 
 
 
-```
+```python
 
 
 ```
@@ -51,7 +56,7 @@ nltk.download("stopwords")
 
 
 
-```
+```python
 df = pd.read_csv('bgg-13m-reviews.csv',index_col=0)
 df.head()
 ```
@@ -138,7 +143,7 @@ df.head()
 **Data Preprocessing**
 
 
-```
+```python
 df = df.dropna()
 df.describe()
 ```
@@ -216,7 +221,7 @@ df.describe()
 
 
 
-```
+```python
 reviews = df[['rating','comment']]
 reviews.head()
 ```
@@ -279,7 +284,7 @@ reviews.head()
 
 
 
-```
+```python
 reviews = shuffle(reviews)
 reviews.head()
 ```
@@ -354,34 +359,32 @@ First, we note that by an elementary combinatorial argument there are 2^{n-1} se
 Note that the last entry in this list is crucial, because we may not want to segment the input word at all, and in the following we assume that “splitPairs” returns all of our possible choices of action. Next we define the “segment” function, which computes the optimal segmentation of a given word. In particular, we assume there is a global function called “wordSeqFitness” which reliably computes the fitness of a given sequence of words, with respect to whether or not it’s probably the correct segmentation.
 
 
-```
-def remove_non_alphabetic_characters(s):
-    return re.sub('[^a-zA-Z]',' ', s).lower().split()
-def Remove_stopwords(s = 'english'):
-    return (nltk.corpus.stopwords.words(s)) 
-```
+```python
+
+with open(data_drict,'r',encoding='utf-8') as f:
+    row_data = reader(f)
+    review = []
+    rate = []
+    for row in row_data:
+        if  row[0] != '' and row[3] !='':
+            rate.append(round(float(row[2])))
+            content = row[3].lower()
+            content = content.replace("\r", "").strip()
+            content = content.replace("\n", "").strip()
+            content = re.sub("[%s]+"%('.,|?|!|:|;\"\-|#|$|%|&|\|(|)|*|+|-|/|<|=|>|@|^|`|{|}|~\[\]'), "", content)
+            sentence = content.split(' ')
+            for i in stopwords:
+                while i in sentence:
+                    sentence.remove(i)
+            content = ' '.join(sentence)
+            review.append(content)
 
 
 ```
 
-def word_segmentation(s):
-    def splitPairs(word):
-        return [(word[:i+1], word[i+1:]) for i in range(len(word))]
-    def segment(word):
-        if not word: return []
-        allSegmentations = [[first] + segment(rest)
-                            for (first, rest) in splitPairs(word)]
-        return max(allSegmentations, key = wordSeqFitness)
-    
-    w = remove_non_alphabetic_characters(s)
-    sw = Remove_stopwords('english')     
-    wd = [x for x in w if x not in sw]
-    return wd
-```
 
-
-```
-x = [word_segmentation(review) for review in reviews['comment']]
+```python
+x = [review for review in reviews['comment']]
 y = [round(r) for r in reviews['rating']]
 ```
 
@@ -389,23 +392,11 @@ y = [round(r) for r in reviews['rating']]
  
 
 
-```
-def dividing_data(x,y):
-    x_train, y_train, x_test, y_test = x, y, [], []
-    test_size = int(len(x)*0.01)
+```python
+x_train, x_test, y_train, y_test = train_test_split(review, rate, test_size=0.3, random_state=0)
+print('Size of Train Set: ', len(x_train))
+print('Size of Test Set: ', len(x_test))
 
-    seed(1)
-
-    for _ in range(test_size):
-        random_index = randrange(len(x_train))
-        x_test.append(x_train.pop(random_index))
-        y_test.append(y_train.pop(random_index))
-    print('Size of Train Set: ', len(x_train))
-    print('Size of Test Set: ', len(x_test))
-    return (x_test,y_test)
-
-x_test, y_test = dividing_data(x,y)
-x_train, y_train = x,y
 ```
 
     Size of Train Set:  2611379
@@ -439,7 +430,7 @@ idf(t) = log(n/df(t)) +1
 
 
 
-```
+```python
 # Get all the words in the training set non-repeatedly and record the index of each word
 
 words_index_dict = {}
@@ -456,7 +447,7 @@ for rating in x_train:
 ```
 
 
-```
+```python
 
 def set_tf(idf):
     temp = []
@@ -502,7 +493,7 @@ After the training procedure we want to classify the new sample (circle with que
 
 
 
-```
+```python
 class Naive_Bayes:
     def __init__(self, data):
         self.d = data.iloc[:, 1:]
@@ -555,41 +546,22 @@ for i in range(len(tfidf)):
 
 
 
-```
+```python
 label_count = [0 for _ in range(11)] + [len(x_train)]
 for rating in y_train:
     label_count[rating]+=1
 ```
 
 
-```
-def predict(review):
-    prob = []
-    words_in_review = set(review)
-    l = review
-    value_count={}
-    for x in l:
-        if x not in value_count:
-            value_count[x]=0
-        value_count[x]+=1
-    words_counts = value_count
-    for lbl in range(11):
-        p = 0
-        for word in words_in_review:
-            if word not in words_index_dict:
-                continue
-            p += log(tfidf[lbl][words_index_dict[word]] * words_counts[word] + 1)
-        p *= lbl_count[lbl]/lbl_count[-1]
-        prob.append(p)
-    return prob.index(max(prob))
-
+```python
+nb = Naive_Bayes()
 
 ```
 
 
-```
+```python
 
-accuracy = sum([predict(x_test[i]) == y_test[i] for i in range((len(x_test)))])/len(x_test)
+accuracy = sum([nb.predict(x_test[i]) == y_test[i] for i in range((len(x_test)))])/len(x_test)
 print("Accuracy of Test set is:", accuracy)
 ```
 
